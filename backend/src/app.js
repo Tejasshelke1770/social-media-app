@@ -1,11 +1,7 @@
-import cookieParser from "cookie-parser";
 import express from "express";
+import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.js";
 import postRouter from "./routes/post.routes.js";
-import multer from "multer";
-
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
 const app = express();
 
@@ -17,6 +13,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
-app.use("/api/post", upload.single("image"), postRouter);
+app.use("/api/post", postRouter);
 
 export default app;
