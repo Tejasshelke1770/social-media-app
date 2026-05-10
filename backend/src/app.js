@@ -1,0 +1,16 @@
+import cookieParser from "cookie-parser";
+import express from "express";
+import authRouter from "./routes/auth.routes.js";
+
+const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.get("/", (req, res) => {
+  res.send("Hello Instagram");
+});
+
+app.use('/api/auth', authRouter)
+
+export default app;
