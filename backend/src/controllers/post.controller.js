@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import postModel from "../models/post.model.js";
+import likeModel from "../models/like.model.js";
 import { uploadImage } from "../services/imageKit.js";
 
 export const createPost = async (req, res) => {
@@ -65,5 +66,52 @@ export const getPostDetails = async (req, res) => {
   return res.status(200).json({
     message: "post fetched Successfully",
     post,
+  });
+};
+
+export const likePost = async (req, res) => {
+  const userId = req.user._id;
+  const postId = req.params.postId;
+
+
+  if (!postId) {
+    return res.status(400).json({
+      message: "post id is required",
+    });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return res.status(400).json({
+      message: "Invalid post id",
+    });
+  }
+
+  const isPostExist = await postModel.findById(postId);
+
+  if (!isPostExist) {
+    return res.status(404).json({
+      message: "post does not exist",
+    });
+  }
+
+  const isPostAlreadyLiked = await likeModel.findOne({
+    postId,
+    userId,
+  });
+
+  if (isPostAlreadyLiked) {
+    return res.status(409).json({
+      message: "You already liked this post",
+    });
+  }
+
+  const likedPost = await likeModel.create({
+    postId,
+    userId,
+  });
+
+  return res.status(201).json({
+    message: "Post liked",
+    post: likedPost.postId,
   });
 };
