@@ -43,6 +43,7 @@ export const registerUser = async (req, res) => {
       email: user.email,
       bio: user.bio,
       profileImage: user.profileImage,
+      accountType : user.accountType
     },
   });
 };
@@ -83,6 +84,7 @@ export const loginUser = async (req, res) => {
       email: exUser.email,
       bio: exUser.bio,
       profileImage: exUser.profileImage,
+      accountType : exUser.accountType
     },
   });
 };
