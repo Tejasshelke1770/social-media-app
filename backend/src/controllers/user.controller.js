@@ -20,15 +20,23 @@ export const followUser = async (req, res) => {
     });
   }
 
+  const FolloweeAccountType = isFolloweeExist.accountType;
+
   const exFollow = await followModel.findOne({
     follower: followerId,
     followee: followeeId,
   });
 
   if (exFollow) {
-    return res.status(200).json({
-      message: "you are already following this user",
-    });
+    if (exFollow.status === "accepted") {
+      return res.status(200).json({
+        message: "you are already following this user",
+      });
+    } else if (exFollow.status === "pending") {
+      return res.status(400).json({
+        message: "Your follow request is pending",
+      });
+    }
   }
 
   if (followeeId.toString() === followerId.toString()) {
@@ -37,13 +45,28 @@ export const followUser = async (req, res) => {
     });
   }
 
+  if (FolloweeAccountType === "private") {
+    const followRec = await followModel.create({
+      follower: followerId,
+      followee: followeeId,
+      status: "pending",
+    });
+
+    return res.status(200).json({
+      message: `Your follow request sent to ${followeeId} id's user`,
+      approval_status: "Pending",
+      follow: followRec,
+    });
+  }
+
   const followRec = await followModel.create({
     follower: followerId,
     followee: followeeId,
+    status: "accepted",
   });
 
-  res.status(200).json({
-    message: `You are started following ${followeeId} id's user`,
+  return res.status(201).json({
+    message: `you are started following ${followeeId} id's user`,
     follow: followRec,
   });
 };
@@ -64,6 +87,7 @@ export const unfollowUser = async (req, res) => {
     });
   }
 
+  //this might be not needed here
   const isUserExist = await userModel.findOne({ _id: unFollowee });
 
   if (!isUserExist) {
@@ -97,3 +121,96 @@ export const unfollowUser = async (req, res) => {
 // is user exist
 // is follow record exist
 // unfollow
+
+export const listFollowRequests = async (req, res) => {
+  const user = req.user;
+
+  if (user.accountType !== "private") {
+    return res.status(403).json({
+      message: "This account is public and does not require follow approval",
+    });
+  }
+
+  const followRequests = await followModel.find({
+    followee: user._id,
+    status: "pending",
+  });
+
+  if (!followRequests.length) {
+    return res.status(200).json({
+      message: "No Follow requests Pending",
+    });
+  }
+
+  res.status(200).json({
+    message: "successfully fetched request list",
+    request: followRequests,
+  });
+};
+
+export const acceptFollowReqest = async (req, res) => {
+  const user = req.user;
+  const requestId = req.params.requestId;
+
+  if (!mongoose.Types.ObjectId.isValid(requestId)) {
+    return res.status(400).json({
+      message: "Invalid approval request id",
+    });
+  }
+
+  const followRequest = await followModel.findOne({
+    _id: requestId,
+    followee: user._id,
+    status: "pending",
+  });
+
+  if (!followRequest) {
+    return res.status(409).json({
+      message: "Follow request does not exist",
+    });
+  }
+
+  const acceptRequest = await followModel.findByIdAndUpdate(
+    requestId,
+    { status: "accepted" },
+    { new: true },
+  );
+
+  return res.status(200).json({
+    message: `follow request approved of user ${followRequest.follower}`,
+    followRecord: {
+      followee: acceptRequest.followee,
+      follower: acceptRequest.follower,
+      status: acceptRequest.status,
+    },
+  });
+};
+
+export const rejectFollowRequest = async (req, res) => {
+  const requestId = req.params.requestId;
+  const userId = req.user._id;
+
+  if (!mongoose.Types.ObjectId.isValid(requestId)) {
+    return res.status(400).json({
+      message: "invalid reject request id",
+    });
+  }
+
+  const followReqest = await followModel.findOne({
+    _id: requestId,
+    followee: userId,
+    status: "pending",
+  });
+
+  if (!followReqest) {
+    return res.status(409).json({
+      message: "Reject request does not exist",
+    });
+  }
+
+  const rejectReq = await followModel.findOneAndDelete({ _id: requestId });
+
+  return res.status(200).json({
+    message : `follow reqest of user ${followReqest.follower} is rejected`
+  })
+};
