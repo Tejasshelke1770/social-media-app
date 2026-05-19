@@ -84,3 +84,18 @@ export const loginUser = async (req, res) => {
     },
   });
 };
+
+export const getMe = async (req, res) => {
+  const userId = req.user._id;
+  const user = await userModel.findById(userId);
+
+  return res.status(200).json({
+    message: "user fetched successfully",
+    user: {
+      username: user.username,
+      email: user.email,
+      bio: user.bio,
+      profileImage: user.profileImage,
+    },
+  });
+};
