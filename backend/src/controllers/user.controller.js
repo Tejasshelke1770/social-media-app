@@ -73,7 +73,8 @@ export const followUser = async (req, res) => {
 
 //isValid followee id
 //is followee exist?
-// exfollow
+// followee account type - private or public
+// exfollow ? exFollow status - accepted or pending
 //self-follow
 // follow
 

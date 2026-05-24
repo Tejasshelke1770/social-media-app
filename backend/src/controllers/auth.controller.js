@@ -28,8 +28,6 @@ export const registerUser = async (req, res) => {
     password: hashPass,
   });
 
-  console.log(user);
-
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
@@ -43,7 +41,7 @@ export const registerUser = async (req, res) => {
       email: user.email,
       bio: user.bio,
       profileImage: user.profileImage,
-      accountType : user.accountType
+      accountType: user.accountType,
     },
   });
 };
@@ -73,9 +71,7 @@ export const loginUser = async (req, res) => {
   const token = jwt.sign({ id: exUser._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
-  res.cookie("token", token, {
-    httpOnly: true,
-  });
+  res.cookie("token", token);
 
   return res.status(200).json({
     message: "login successful",
@@ -84,7 +80,22 @@ export const loginUser = async (req, res) => {
       email: exUser.email,
       bio: exUser.bio,
       profileImage: exUser.profileImage,
-      accountType : exUser.accountType
+      accountType: exUser.accountType,
+    },
+  });
+};
+
+export const getMe = async (req, res) => {
+  const userId = req.user._id;
+  const user = await userModel.findById(userId);
+
+  return res.status(200).json({
+    message: "user fetched successfully",
+    user: {
+      username: user.username,
+      email: user.email,
+      bio: user.bio,
+      profileImage: user.profileImage,
     },
   });
 };
