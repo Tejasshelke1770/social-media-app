@@ -21,6 +21,12 @@ app.get("/", (req, res) => {
   res.send("Hello Instagram");
 });
 
+app.use('*name', (req, res, next)=>{
+  const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+  console.log(fullUrl);
+  next()
+})
+
 app.use("/api/auth", authRouter);
 app.use("/api/post", postRouter);
 app.use("/api/user", userRouter);

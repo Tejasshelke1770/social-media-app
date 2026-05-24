@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router";
-import axios from "axios";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -9,18 +8,8 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const res = await axios.post(
-      "http://localhost:3000/api/auth/register",
-      {
-        username,
-        email,
-        password,
-      },
-      {
-        withCredentials: true,
-      },
-    );
-    console.log(res);
+
+    // console.log(res);
     setUsername("");
     setEmail("");
     setPassword("");

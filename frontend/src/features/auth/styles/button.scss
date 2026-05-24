@@ -1,0 +1,21 @@
+    button {
+            padding: 0.5rem;
+            border: none;
+            outline: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: center;
+            
+            transition: all ease-in-out 100ms;
+
+            &:hover {
+                background-color: #0056b3;
+            }
+            &:active{
+                transform: scale(0.95);
+            }
+        }

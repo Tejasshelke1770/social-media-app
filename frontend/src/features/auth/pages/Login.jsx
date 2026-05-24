@@ -1,24 +1,20 @@
 import React, { useState } from "react";
 import "../styles/form.scss";
-import { Link } from "react-router";
-import axios from "axios";
+import { Link, useNavigate } from "react-router";
+import useAuth from "../hooks/useAuth.jsx";
+import { RotatingLines } from "react-loader-spinner";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const { loading, handleLogin } = useAuth();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const res = await axios.post(
-      "http://localhost:3000/api/auth/login",
-      {
-        username,
-        password,
-      },
-      { withCredentials: true },
-    );
-    console.log(res);
-    setUsername("");
+    await handleLogin(email, password);
+    navigate("/");
+    setEmail("");
     setPassword("");
   };
 
@@ -26,14 +22,14 @@ const Login = () => {
     <main>
       <div className="form-container">
         <h1>Login</h1>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleFormSubmit}>
           <input
             required
             type="text"
-            name="username"
-            placeholder="Enter username"
-            onChange={(e) => setUsername(e.target.value)}
-            value={username}
+            name="email"
+            placeholder="Enter Email"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
           />
           <input
             required
@@ -43,11 +39,17 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
-          <button type="submit">Login</button>
+          <button type="submit">
+            {loading ? (
+              <RotatingLines height="20" width="20" color="grey" />
+            ) : (
+              "Login"
+            )}
+          </button>
           <p>
             Don't have an account ?{" "}
             <Link className="toggleAuthForm" to="/register">
-              Register here
+              Register here.
             </Link>
           </p>
         </form>
