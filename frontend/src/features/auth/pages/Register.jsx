@@ -44,7 +44,7 @@ const Register = () => {
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
-          <button type="submit">Register</button>
+          <button className="button-primary" type="submit">Register</button>
           <p>
             already have an account ?{" "}
             <Link className="toggleAuthForm" to="/login">

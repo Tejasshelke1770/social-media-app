@@ -39,7 +39,7 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
-          <button type="submit">
+          <button className="button-primary" type="submit">
             {loading ? (
               <RotatingLines height="20" width="20" color="grey" />
             ) : (

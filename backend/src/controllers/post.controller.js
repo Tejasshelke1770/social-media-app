@@ -118,10 +118,37 @@ export const likePost = async (req, res) => {
 export const getFeed = async (req, res) => {
   const userId = req.user._id;
 
-  const posts = await postModel.find().populate("userId", "-password");
+  const posts = await Promise.all(
+ (   await postModel
+      .find()
+      .populate("userId")
+      .select("-password")
+      .lean())
+      .map(async (post) => {
+        const isLiked = await likeModel.findOne({
+          postId: post._id,
+          userId,
+        });
+        post.isLiked = !!isLiked;
+        return post;
+      }),
+  );
 
-  res.status(200).json({
-    message: "post fetched successfully",
-    posts,
-  });
+  // const likedPost = await Promise.all(
+  //   posts.map(async (post) => {
+  //     const isLiked = await likeModel.findOne({
+  //       postId: post._id,
+  //       userId,
+  //     });
+  //     post.isLiked = !!isLiked;
+  //     return post;
+  //   }),
+  // );
+
+  console.log(posts);
+
+  // res.status(200).json({
+  //   message: "post fetched successfully",
+  //   posts,
+  // });
 };
