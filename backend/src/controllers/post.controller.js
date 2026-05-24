@@ -73,7 +73,6 @@ export const likePost = async (req, res) => {
   const userId = req.user._id;
   const postId = req.params.postId;
 
-
   if (!postId) {
     return res.status(400).json({
       message: "post id is required",
@@ -113,5 +112,16 @@ export const likePost = async (req, res) => {
   return res.status(201).json({
     message: "Post liked",
     post: likedPost.postId,
+  });
+};
+
+export const getFeed = async (req, res) => {
+  const userId = req.user._id;
+
+  const posts = await postModel.find().populate("userId", "-password");
+
+  res.status(200).json({
+    message: "post fetched successfully",
+    posts,
   });
 };

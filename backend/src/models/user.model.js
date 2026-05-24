@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "password is required"],
-    Selection:false
+    select: false,
   },
   bio: {
     type: String,
@@ -24,14 +24,14 @@ const userSchema = new mongoose.Schema({
     default:
       "https://ik.imagekit.io/0etg1a8vc/avatar-default-user-profile-icon-simple-flat-vector-57234190.webp",
   },
-  accountType:{
+  accountType: {
     type: String,
     default: "public",
     enum: {
       values: ["public", "private"],
       message: "Account type can be only public or private",
     },
-  }
+  },
 });
 
 const userModel = mongoose.model("users", userSchema);

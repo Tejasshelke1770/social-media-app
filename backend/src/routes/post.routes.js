@@ -3,6 +3,7 @@ import multer from "multer";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import {
   createPost,
+  getFeed,
   getPostDetails,
   getPosts,
   likePost,
@@ -20,5 +21,7 @@ postRouter.get("/", authMiddleware, getPosts);
 postRouter.get("/detail/:postId", authMiddleware, getPostDetails);
 
 postRouter.post("/like/:postId", authMiddleware, likePost);
+
+postRouter.get('/feed', authMiddleware, getFeed)
 
 export default postRouter;
