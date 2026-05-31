@@ -1,10 +1,10 @@
-import Routess from "./routes";
+import Routes from "./routes";
 import './styles.scss'
 
 const App = () => {
   return (
     <div>
-      <Routess />
+      <Routes />
     </div>
   );
 };

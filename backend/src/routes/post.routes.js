@@ -3,9 +3,11 @@ import multer from "multer";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import {
   createPost,
+  getFeed,
   getPostDetails,
   getPosts,
   likePost,
+  disLikePost
 } from "../controllers/post.controller.js";
 import postModel from "../models/post.model.js";
 
@@ -20,5 +22,9 @@ postRouter.get("/", authMiddleware, getPosts);
 postRouter.get("/detail/:postId", authMiddleware, getPostDetails);
 
 postRouter.post("/like/:postId", authMiddleware, likePost);
+
+postRouter.post("/dislike/:postId", authMiddleware, disLikePost);
+
+postRouter.get('/feed', authMiddleware, getFeed)
 
 export default postRouter;
