@@ -4,25 +4,25 @@ import { FaRegHeart } from "react-icons/fa";
 import { FcLike } from "react-icons/fc";
 import { FaRegCommentAlt } from "react-icons/fa";
 import { IoMdShareAlt } from "react-icons/io";
-import { CiBookmark, CiHospital1 } from "react-icons/ci";
+import { CiBookmark } from "react-icons/ci";
 import { FaBookmark } from "react-icons/fa6";
+import usePost from "../hooks/usePost";
 
 const Post = ({ data }) => {
+  const { likePostContext, disLikePostContext } = usePost();
   const {
     _id: postId,
     caption,
     imageUrl: postImgUrl,
     userId: userInfo,
     createdAt,
+    isLiked,
   } = data;
-  console.log(userInfo.profileImage);
   return (
     <div className="post">
       <div className="user">
         <div className="img-wrapper">
-          <img
-            src={userInfo?.profileImage}
-          />
+          <img src={userInfo?.profileImage} />
         </div>
         <p>{userInfo.username}</p>
       </div>
@@ -32,8 +32,12 @@ const Post = ({ data }) => {
       <div className="bottom">
         <div className="icons">
           <div className="left">
-            <button>
-              <FaRegHeart />
+            <button
+              onClick={() =>
+                isLiked ? disLikePostContext(postId) : likePostContext(postId)
+              }
+            >
+              {isLiked ? <FcLike /> : <FaRegHeart />}
             </button>
             <button>
               <FaRegCommentAlt />
