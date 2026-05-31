@@ -115,40 +115,66 @@ export const likePost = async (req, res) => {
   });
 };
 
+export const disLikePost = async (req, res) => {
+  const userId = req.user._id;
+  const postId = req.params.postId;
+
+  if (!postId) {
+    return res.status(400).json({
+      message: "post id is required",
+    });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return res.status(400).json({
+      message: "Invalid post id",
+    });
+  }
+
+  const isPostExists = await postModel.findById(postId);
+
+  if (!isPostExists) {
+    return res.status(404).json({
+      message: "post does not exist",
+    });
+  }
+
+  const isPostLiked = await likeModel.findOne({
+    postId,
+    userId,
+  });
+
+  if (!isPostLiked) {
+    return res.status(200).json({
+      message: "post is not liked",
+    });
+  }
+
+  const disLike = await likeModel.findOneAndDelete({ postId, userId });
+
+  return res.status(200).json({
+    message: "post disliked successfully",
+  });
+};
+
 export const getFeed = async (req, res) => {
   const userId = req.user._id;
 
   const posts = await Promise.all(
- (   await postModel
-      .find()
-      .populate("userId")
-      .select("-password")
-      .lean())
-      .map(async (post) => {
+    (await postModel.find().populate("userId").select("-password").lean()).map(
+      async (post) => {
         const isLiked = await likeModel.findOne({
           postId: post._id,
           userId,
         });
         post.isLiked = !!isLiked;
         return post;
-      }),
+      },
+    ),
   );
 
-  // const likedPost = await Promise.all(
-  //   posts.map(async (post) => {
-  //     const isLiked = await likeModel.findOne({
-  //       postId: post._id,
-  //       userId,
-  //     });
-  //     post.isLiked = !!isLiked;
-  //     return post;
-  //   }),
-  // );
-
-  console.log(posts);
-
-  // res.status(200).json({
-  //   message: "post fetched successfully",
-  //   posts,
-  // });
+  res.status(200).json({
+    message: "post fetched successfully",
+    posts,
+  });
 };

@@ -7,6 +7,7 @@ import {
   getPostDetails,
   getPosts,
   likePost,
+  disLikePost
 } from "../controllers/post.controller.js";
 import postModel from "../models/post.model.js";
 
@@ -21,6 +22,8 @@ postRouter.get("/", authMiddleware, getPosts);
 postRouter.get("/detail/:postId", authMiddleware, getPostDetails);
 
 postRouter.post("/like/:postId", authMiddleware, likePost);
+
+postRouter.post("/dislike/:postId", authMiddleware, disLikePost);
 
 postRouter.get('/feed', authMiddleware, getFeed)
 
